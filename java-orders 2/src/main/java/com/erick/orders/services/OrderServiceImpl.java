@@ -61,8 +61,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order updateOrder(Order order, long id) {
-        Order currentOrder = orderrepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Order " + id + " Not Found"));
+        Order currentOrder = orderrepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Order " + id + " Not Found"));
 
         if (order.getOrdamount() > 0.0)
         {

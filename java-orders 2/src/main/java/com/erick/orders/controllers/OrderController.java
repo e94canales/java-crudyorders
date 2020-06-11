@@ -1,6 +1,5 @@
 package com.erick.orders.controllers;
 
-import com.erick.orders.models.Customer;
 import com.erick.orders.models.Order;
 import com.erick.orders.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ public class OrderController {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         URI newOrderURI = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
+                .path("{id}")
                 .buildAndExpand(newOrder.getOrdnum())
                 .toUri();
         responseHeaders.setLocation(newOrderURI);
@@ -61,15 +60,8 @@ public class OrderController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // PATCH http://localhost:2019/orders/order/63
-    @PatchMapping(value = "/order/{id}", consumes = {"application/json"})
-    public ResponseEntity<?> updateOrder(@RequestBody Order updateOrder, @PathVariable long id)
-    {
-        orderService.updateOrder(updateOrder, id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
-    // DELETEhttp://localhost:2019/orders/order/58
+    // DELETE http://localhost:2019/orders/order/58
     @DeleteMapping("/order/{id}")
     public ResponseEntity<?> deleteOrderById(@PathVariable long id)
     {
