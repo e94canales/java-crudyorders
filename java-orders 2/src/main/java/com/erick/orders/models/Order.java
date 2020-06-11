@@ -83,6 +83,10 @@ public class Order {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
+    public void addPayments(Payment payment) {
+        payments.add(payment);
+        payment.getOrders().add(this);
+    }
 
     @Override
     public String toString() {
@@ -95,4 +99,6 @@ public class Order {
                 ", payments=" + payments +
                 '}';
     }
+
+
 }

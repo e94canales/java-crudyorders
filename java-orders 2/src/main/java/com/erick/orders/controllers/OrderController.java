@@ -1,15 +1,17 @@
 package com.erick.orders.controllers;
 
+import com.erick.orders.models.Customer;
 import com.erick.orders.models.Order;
 import com.erick.orders.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -29,6 +31,50 @@ public class OrderController {
     public ResponseEntity<?> getByAdvanceAmount(){
         List<Order> rtnList = orderService.getByAdvancedAmountGreaterThanZero();
         return new ResponseEntity<>(rtnList, HttpStatus.OK);
+    }
+
+    // POST  http://localhost:2019/orders/order
+    @PostMapping(value = "/order", consumes = {"application/json"})
+    public ResponseEntity<?> postNewOrder(@Validated @RequestBody Order newOrder)
+    {
+        newOrder.setOrdnum(0);
+        newOrder = orderService.postOrder(newOrder);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        URI newOrderURI = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(newOrder.getOrdnum())
+                .toUri();
+        responseHeaders.setLocation(newOrderURI);
+
+        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+    }
+
+    // PUT http://localhost:2019/orders/order/63
+    @PutMapping(value = "/order/{id}",
+            consumes = {"application/json"})
+    public ResponseEntity<?> updateFullOrder(@RequestBody Order newOrder, @PathVariable long id)
+    {
+        newOrder.setOrdnum(id);
+        orderService.updateOrder(newOrder, id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // PATCH http://localhost:2019/orders/order/63
+    @PatchMapping(value = "/order/{id}", consumes = {"application/json"})
+    public ResponseEntity<?> updateOrder(@RequestBody Order updateOrder, @PathVariable long id)
+    {
+        orderService.updateOrder(updateOrder, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // DELETEhttp://localhost:2019/orders/order/58
+    @DeleteMapping("/order/{id}")
+    public ResponseEntity<?> deleteOrderById(@PathVariable long id)
+    {
+        orderService.deleteOrder(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
